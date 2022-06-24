@@ -1,0 +1,17 @@
+extends layout/form
+
+block content
+    h4 เข้าสู่ระบบ
+    form(action="/register", method="post")
+      label.form-label(for="email") อีเมล
+      input.form-control(id="email" type="email", name="email" required)
+      .mt-2
+        label.form-label(for="password") รหัสผ่าน
+        input.form-control(id="password" type="password", name="password" required)
+      .mt-2
+        label.form-label(for="confirmpassword") ยืนยันรหัสผ่าน
+        input.form-control(id="confirmpassword" type="confirmpassword", name="confirmpassword" required)
+      p=err
+      .mt-2
+        button.btn.btn-primary สมัครสมาชิก
+        a(href="/") เข้าสู่ระบบ
