@@ -3,14 +3,24 @@ const express = require('express')
 const path = require('path')
 const mongoose = require('mongoose')
 const session = require('express-session')
-
+const connectRedis = require('connect-redis')
+const redis = require('redis')
 const app = express()
+
 dotenv.config()
+
 mongoose.connect(process.env.MONGODB_URL)
+const RedisStore = connectRedis(session)
+const redisClient = redis.createClient({
+  legacyMode: true,
+  url: process.env.REDIS_URL
+})
+redisClient.connect().catch()
 app.set('view engine', 'pug')
 app.set('views', path.join(__dirname, './views'))
 
 app.use(session({
+  store: new RedisStore({ client: redisClient }),
   cookie: {
     maxAge: 30000
   },
