@@ -6,9 +6,11 @@ module.exports = async (req, res) => {
     password: req.body.password
   })
   if (!user) {
+    req.flash('err', 'อีเมลหรือรหัสผ่านไม่ถูกต้อง')
     return res.redirect('/login')
   } else {
     req.session.user = user
-    res.redirect('/')
+    req.flash('success', 'เข้าสู่ระบบสำเร็จ')
+    return res.redirect('/')
   }
 }

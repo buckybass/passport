@@ -4,6 +4,7 @@ const path = require('path')
 const mongoose = require('mongoose')
 const session = require('express-session')
 const connectRedis = require('connect-redis')
+const connectFlash = require('connect-flash')
 const redis = require('redis')
 const app = express()
 
@@ -29,6 +30,15 @@ app.use(session({
   saveUninitialized: false,
   secret: process.env.SECRET_KEY
 }))
+app.use(connectFlash())
+app.use((req, res, next) => {
+  res.locals.alertMessage = {
+    err: req.flash('err'),
+    success: req.flash('success')
+  }
+  next()
+}
+)
 app.use(express.urlencoded({ extended: false }))
 
 app.use(require('./router'))

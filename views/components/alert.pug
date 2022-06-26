@@ -1,0 +1,11 @@
+if alertMessage.success && alertMessage.success.length > 0
+  .alert.alert-success
+    ul.m-0
+      each message in alertMessage.success
+        li=message
+
+if alertMessage.err && alertMessage.err.length > 0
+  .alert.alert-danger
+    ul.m-0
+      each message in alertMessage.err
+        li=message

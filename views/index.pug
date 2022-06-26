@@ -2,6 +2,7 @@ extends layout/main
 
 block content
   h1 เข้าสู่ระบบแล้ว
+  include components/alert
   ul
     li อีเมลคือ #{user.email}
     li รหัสผ่านคือ #{user.password}

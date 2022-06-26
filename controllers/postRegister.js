@@ -1,9 +1,22 @@
 const User = require('../models/Users')
 
 module.exports = async (req, res) => {
-  if (req.body.password !== req.body.confirmpassword) {
-    return res.redirect('/register')
+  function redirectWithError (msg, url) {
+    req.flash('err', msg)
+    return res.redirect(url)
   }
-  await User.create(req.body)
-  res.redirect('/')
+  if (req.body.password !== req.body.confirmpassword) {
+    redirectWithError('รหัสผ่านไม่ตรงกัน', '/register')
+  }
+  const user = User.findOne({ email: req.body.email })
+  if (user) {
+    redirectWithError('อีเมลนี้มีการสมัครแล้ว', '/register')
+  }
+  try {
+    await User.create(req.body)
+  } catch (error) {
+    redirectWithError(error.message || 'พบปัญหาบางอย่าง', '/register')
+  }
+  req.flash('success', 'สมัครสมาชิกสำเร็จ')
+  return res.redirect('/')
 }

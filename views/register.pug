@@ -1,7 +1,8 @@
 extends layout/form
 
 block content
-    h4 เข้าสู่ระบบ
+    h4 สมัครสมาชิก
+    include components/alert
     form(action="/register", method="post")
       label.form-label(for="email") อีเมล
       input.form-control(id="email" type="email", name="email" required)
