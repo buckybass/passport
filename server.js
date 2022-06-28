@@ -43,7 +43,8 @@ app.use(express.urlencoded({ extended: false }))
 
 app.use(require('./router'))
 
-const { PORT } = process.env
+const PORT = process.env.PORT || 4000
+
 app.listen(PORT, () => {
   console.log(`server is start is port = ${PORT}`)
 })
