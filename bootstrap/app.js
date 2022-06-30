@@ -6,6 +6,7 @@ const session = require('express-session')
 const connectRedis = require('connect-redis')
 const connectFlash = require('connect-flash')
 const redis = require('redis')
+const passport = require('passport')
 const app = express()
 
 dotenv.config()
@@ -18,8 +19,9 @@ const redisClient = redis.createClient({
 })
 redisClient.connect().catch()
 app.set('view engine', 'pug')
-app.set('views', path.join(__dirname, './views'))
+app.set('views', path.join(__dirname, '../views'))
 
+require('./passport')
 app.use(session({
   store: new RedisStore({ client: redisClient }),
   cookie: {
@@ -31,6 +33,8 @@ app.use(session({
   secret: process.env.SECRET_KEY
 }))
 app.use(connectFlash())
+app.use(passport.initialize())
+app.use(passport.session())
 app.use((req, res, next) => {
   res.locals.alertMessage = {
     err: req.flash('err'),
@@ -40,7 +44,6 @@ app.use((req, res, next) => {
 }
 )
 app.use(express.urlencoded({ extended: false }))
-
 app.use(require('./router'))
 
 const PORT = process.env.PORT || 4000
