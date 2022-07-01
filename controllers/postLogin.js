@@ -1,6 +1,6 @@
 const passport = require('passport')
-module.exports = (req, res, next) => {
-  passport.authenticate('local', (err, user, info) => {
+module.exports = (strategyName) => (req, res, next) => {
+  passport.authenticate(strategyName, (err, user, info) => {
     if (err) {
       return next(err)
     }

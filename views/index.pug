@@ -3,7 +3,10 @@ extends layout/main
 block content
   h1 เข้าสู่ระบบแล้ว
   include components/alert
-  ul
-    li อีเมลคือ #{user.email}
-    li รหัสผ่านคือ #{user.password}
-    a.btn.btn-danger(href="/logout") ออกจากระบบ
+  .card
+    .card-body
+      img(src=user.avatarUrl, alt="")
+      ul
+        li อีเมลคือ #{user.email}
+        li รหัสผ่านคือ #{user.password}
+        a.btn.btn-danger(href="/logout") ออกจากระบบ

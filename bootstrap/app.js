@@ -21,6 +21,7 @@ redisClient.connect().catch()
 app.set('view engine', 'pug')
 app.set('views', path.join(__dirname, '../views'))
 
+app.use(express.static(path.join(__dirname, '../public')))
 require('./passport')
 app.use(session({
   store: new RedisStore({ client: redisClient }),
