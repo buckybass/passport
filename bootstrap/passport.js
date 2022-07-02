@@ -17,13 +17,15 @@ passport.use(new LocalStrategy({
     const user = await Users.findOne({ email })
     if (!user) {
       return NextWithError()
+    }
+    if (!user.password) {
+      return NextWithError()
+    }
+    const result = await bcrypt.compare(password, user.password)
+    if (result) {
+      return next(null, user)
     } else {
-      const result = await bcrypt.compare(password, user.password)
-      if (result) {
-        return next(null, user)
-      } else {
-        NextWithError()
-      }
+      NextWithError()
     }
   } catch (error) {
     return next(error)
@@ -34,25 +36,33 @@ passport.use(new FacebookStrategy({
   clientID: process.env.FACEBOOK_CLIENT_ID,
   clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
   callbackURL: process.env.FACEBOOK_CALLBACK_URL,
-  profileFields: ['displayName', 'email', 'picture.type(large)']
-}, async (accessToken, refreshToken, profile, next) => {
+  profileFields: ['displayName', 'email', 'picture.type(large)'],
+  passReqToCallback: true
+}, async (req, accessToken, refreshToken, profile, next) => {
   try {
-    console.log(profile._json)
     if (!profile._json.email) {
       return next(null, false, 'กรุณายินยอมให้เข้าถึงอีเมลในเฟสบุคเนื่องจากคุณปฎิเสธ คลิก<a>ลิ้งนี้</a>เพื่อยินยอมใหม่')
     }
     const haveuser = await Users.findOne({ 'oauth.facebook': profile._json.id })
+    if (req.user) {
+      if (haveuser) {
+        return next(null, false, 'บัญชีนี้เคยผูกบัญชีไปแล้ว')
+      }
+      req.user.oauth.facebook = profile._json.id
+      await req.user.save()
+      return next(null, req.user)
+    }
     if (haveuser) {
       return next(null, haveuser)
+    }
+    const haveemail = await Users.findOne({ email: profile._json.email })
+    if (haveemail) {
+      return next(null, false, 'มีอีเมลนี้อยู่ในระบบแล้ว')
     }
     let avatarUrl
     const avartarUrlFB = profile?._json?.picture?.data?.url
     if (avartarUrlFB) {
       avatarUrl = await uploadfileFromurl(`fb_${profile._json.id}.jpg`, avartarUrlFB)
-    }
-    const haveemail = await Users.findOne({ email: profile._json.email })
-    if (haveemail) {
-      return next(null, false, 'มีอีเมลนี้อยู่ในระบบแล้ว')
     }
 
     const user = await Users.create({
@@ -72,8 +82,9 @@ passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   callbackURL: process.env.GOOGLE_CALLBACK_URL,
-  scope: ['profile', 'email']
-}, async (accessToken, refreshToken, profile, next) => {
+  scope: ['profile', 'email'],
+  passReqToCallback: true
+}, async (req, accessToken, refreshToken, profile, next) => {
   try {
     console.log(profile._json)
     if (!profile._json.email) {
@@ -84,14 +95,20 @@ passport.use(new GoogleStrategy({
       return next(null, haveuser)
     }
     let avatarUrl
-    const avartarUrlFB = profile?._json?.picture
-    if (avartarUrlFB) {
-      avatarUrl = await uploadfileFromurl(`google_${profile._json.sub}.jpg`, avartarUrlFB)
+    const avartarUrlGG = profile?._json?.picture
+    if (avartarUrlGG) {
+      avatarUrl = await uploadfileFromurl(`google_${profile._json.sub}.jpg`, avartarUrlGG)
+    }
+    if (req.user) {
+      req.user.oauth.google = profile._json.sub
+      await req.user.save()
+      return next(null, req.user)
     }
     const haveemail = await Users.findOne({ email: profile._json.email })
     if (haveemail) {
       return next(null, false, 'มีอีเมลนี้อยู่ในระบบแล้ว')
     }
+
     const user = await Users.create({
       email: profile._json.email,
       avatarUrl,

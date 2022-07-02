@@ -6,7 +6,11 @@ module.exports = (strategyName) => (req, res, next) => {
     }
     if (!user) {
       req.flash('err', info)
-      return res.redirect('/login')
+      return res.redirect(req.user ? '/' : '/login')
+    }
+    if (req.user) {
+      req.flash('success', 'ผูกบัญชีสำเร็จ')
+      return res.redirect('/')
     }
     req.login(user, (err) => {
       if (err) {

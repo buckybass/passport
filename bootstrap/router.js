@@ -6,6 +6,7 @@ const postLogin = require('../controllers/postLogin')
 const scopeFacebook = ['email']
 
 router.get('/', mustLogin, require('../controllers/index'))
+router.post('/update-password', mustLogin, require('../controllers/updatePassword'))
 router.get('/login', require('../controllers/getLogin'))
 router.post('/login', postLogin('local'))
 router.get('/login/facebook', passport.authenticate('facebook', { scope: scopeFacebook }))
