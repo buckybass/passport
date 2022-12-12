@@ -1,26 +1,31 @@
 extends layout/main
-
 block content
-  h1 เข้าสู่ระบบแล้ว
-  include components/alert
-  .card
-    .card-body
-      img(src=user.avatarUrl, alt="")
-      h4 อีเมลคือ #{user.email}
-      ul
-        li=user.password ? 'บัญชีนี้มีรหัสผ่านแล้ว' : 'บัญชีนี้ยังไม่มีรหัสผ่าน'
-        li=user.oauth.facebook ? 'บัญชีผูกกับ Facebook แล้ว' : 'บัญชีนี้ยังไม่ผูกกับ Facebook '
-        li=user.oauth.google ? 'บัญชีผูกกับ Google แล้ว' : 'บัญชีนี้ยังไม่ผูกกับ Google '
-
-        if !user.password
-          .card.mt-3
-            .card-body.bg-light
-              form(action="/update-password", method="post")
-                h2 เพิ่มรหัสผ่าน
-                input.form-control(type="password" name="password" placeholder="รหัสผ่าน")
-                button.btn.btn-primary.mt-2 บันทึกรหัสผ่าน
-        if !user.oauth.google
-          a.d-block(href="/login/google") ผูกบัญชี Google #[img(src="/oauthimg/googlepng.png" style="width:100px")]
-        if !user.oauth.facebook
-          a.d-block(href="/login/facebook") ผูกบัญชี Facebook #[img(src="/oauthimg/facebook.png" style="width:100px")]
-        a.btn.btn-danger.mt-2(href="/logout") ออกจากระบบ
+  include components/navbar
+  .container
+    include components/alert
+    .card
+      .card.body
+        form.m-3
+          input.form-control(type="text", name="",placeholder="ค้นหาเลย")
+          input.btn.btn-success.mt-2(type="button", value="ค้นหา")
+    h1 ข้อมูลสมาชิก
+    .card
+      .card-body
+        img(src=user.avatarUrl, alt="")
+        h4 อีเมลคือ #{user.email}
+        ul
+          li=user.password ? 'บัญชีนี้มีรหัสผ่านแล้ว' : 'บัญชีนี้ยังไม่มีรหัสผ่าน'
+          li=user.oauth.facebook ? 'บัญชีผูกกับ Facebook แล้ว' : 'บัญชีนี้ยังไม่ผูกกับ Facebook '
+          li=user.oauth.google ? 'บัญชีผูกกับ Google แล้ว' : 'บัญชีนี้ยังไม่ผูกกับ Google '
+          if !user.password
+            .card.mt-3
+              .card-body.bg-light
+                form(action="/update-password", method="post")
+                  h2 เพิ่มรหัสผ่าน
+                  input.form-control(type="password" name="password" placeholder="รหัสผ่าน")
+                  button.btn.btn-primary.mt-2 บันทึกรหัสผ่าน
+          if !user.oauth.google
+            a.d-block(href="/login/google") ผูกบัญชี Google #[img(src="/oauthimg/googlepng.png" style="width:100px")]
+          if !user.oauth.facebook
+            a.d-block(href="/login/facebook") ผูกบัญชี Facebook #[img(src="/oauthimg/facebook.png" style="width:100px")]
+          a.btn.btn-danger.mt-2(href="/logout") ออกจากระบบ
